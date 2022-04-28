@@ -51,7 +51,7 @@ namespace visualsort
         static int run = 0;
 
         // max length to check
-        static int maxlength = size - 1;
+        static int maxlength = -1;
 
         // input
         Keys[] keypresses;
@@ -120,19 +120,18 @@ namespace visualsort
                             status = 1;
                         }
                         else if (status == 1) status = 2;
-                        else if (status == 2) status = 1;
                         break;
                     // exit
                     case Keys.Escape:
                         Exit();
                         break;
+                    // shuffle
                     case Keys.Enter:
-                        // step once
-                        if (status == 1)
-                        {
-                            list = BubbleSortStep(list);
-                            if (IsSorted(list)) status = 0;
-                        }
+                        list = ShuffleList(list);
+                        j = 0;
+                        maxlength=size - 1;
+                        run=0;
+                        status = 1;
                         break;
                 }
             }
@@ -147,7 +146,11 @@ namespace visualsort
                 delayframes = delay;
 
                 // check if sorted
-                if (IsSorted(list)) status = 0;
+                if (IsSorted(list))
+                {
+                    status = 0;
+                    maxlength=-1;
+                }
             }
             else if (delayframes > 0) delayframes--;
             base.Update(gameTime);
@@ -171,6 +174,7 @@ namespace visualsort
                 // give each pixel a colour
                 Color[] data = new Color[width * (width/2) * list[i]];
                 if (i==j && !IsSorted(list)) { for (int k = 0; k < data.Length; k++) data[k] = Color.Red; }
+                else if (i > maxlength) { for (int k = 0; k < data.Length; k++) data[k] = Color.Green; }
                 else { for (int k = 0; k < data.Length; k++) data[k] = Color.White; }
                 rect.SetData(data);
 
